@@ -3,6 +3,15 @@ import { gql, useQuery } from "@apollo/client";
 import styled from "styled-components";
 import Movie from "../Components/Movie";
 
+const GET_MOVIES = gql`
+  {
+    movies {
+      id
+      medium_cover_image
+    }
+  }
+`;
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -38,28 +47,31 @@ const Loading = styled.div`
   margin-top: 10px;
 `;
 
-const GET_MOVIES = gql`
-  {
-    movies {
-      id
-      medium_cover_image
-    }
-  }
+const Movies = styled.div`
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 25px;
+  width: 60%;
+  position: relative;
+  top: -50px;
 `;
 
 export default () => {
-  const { loading, error, data } = useQuery(GET_MOVIES);
-
+  const { loading, data } = useQuery(GET_MOVIES);
   return (
     <Container>
       <Header>
-        <Title>Apollo 2020</Title>
-        <Subtitle>I love GraphQL</Subtitle>
+        <Title>Apollo Movies</Title>
+        <Subtitle>Movie app with Apollo and GraphQL</Subtitle>
       </Header>
       {loading && <Loading>Loading...</Loading>}
-      {!loading &&
-        data.movies &&
-        data.movies.map((movie) => <Movie key={movie.id} id={movie.id} />)}
+      {!loading && data.movies && (
+        <Movies>
+          {data.movies.map((movie) => (
+            <Movie key={movie.id} id={movie.id} bg={movie.medium_cover_image} />
+          ))}
+        </Movies>
+      )}
     </Container>
   );
 };
